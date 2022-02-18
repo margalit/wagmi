@@ -3,6 +3,8 @@ import { ethers } from 'ethers'
 import { UserRejectedRequestError } from 'wagmi-private'
 import { getAddress } from 'ethers/lib/utils'
 
+import { MockWallet } from './mockWallet'
+
 export type MockProviderOptions = {
   flags?: {
     failConnect?: boolean
@@ -23,7 +25,7 @@ export class MockProvider extends ethers.providers.BaseProvider {
   events = new EventEmitter<Events>()
 
   #options: MockProviderOptions
-  #wallet?: ethers.Wallet
+  #wallet?: MockWallet
 
   constructor(options: MockProviderOptions) {
     super(options.network)
@@ -33,7 +35,10 @@ export class MockProvider extends ethers.providers.BaseProvider {
   async enable() {
     if (this.#options.flags?.failConnect) throw new UserRejectedRequestError()
     if (!this.#wallet)
-      this.#wallet = new ethers.Wallet(this.#options.privateKey)
+      this.#wallet = new MockWallet({
+        privateKey: this.#options.privateKey,
+        provider: this,
+      })
     const address = await this.#wallet.getAddress()
     this.events.emit('accountsChanged', [address])
     return [address]
