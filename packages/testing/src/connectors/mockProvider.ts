@@ -35,7 +35,10 @@ export class MockProvider extends ethers.providers.BaseProvider {
   async enable() {
     if (this.#options.flags?.failConnect) throw new UserRejectedRequestError()
     if (!this.#wallet)
-      this.#wallet = new MockWallet({ privateKey: this.#options.privateKey })
+      this.#wallet = new MockWallet({
+        privateKey: this.#options.privateKey,
+        provider: this,
+      })
     const address = await this.#wallet.getAddress()
     this.events.emit('accountsChanged', [address])
     return [address]
