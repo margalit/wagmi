@@ -1,17 +1,18 @@
-import { ethers } from 'ethers'
-
 import { contracts, wallets } from '../constants'
 import { MockProvider } from './mockProvider'
+import { MockWallet } from './mockWallet'
 
 describe('MockProvider', () => {
   let provider: MockProvider
-  let wallet: ethers.Wallet
+  let wallet: MockWallet
   beforeEach(() => {
     provider = new MockProvider({
       network: 1,
       privateKey: wallets.ethers1.privateKey,
     })
-    wallet = new ethers.Wallet(wallets.ethers1.privateKey)
+    wallet = new MockWallet({
+      privateKey: wallets.ethers1.privateKey,
+    })
   })
 
   it('inits', () => {
